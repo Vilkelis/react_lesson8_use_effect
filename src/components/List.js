@@ -1,29 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import UserModel from '../models/UserModel';
-import ListItem from './ListItem';
+import UseJsonFetch from '../hooks/UseJsonFetch';
+import Alert from './Alert';
+import ListItem from './ListItem'; 
 
-function List(props) {
-  const {items, activeItem, itemClickHandler} = props;  
-  
-  if (items) {
-    return (      
-      <div className="List list-group">
-        {items.map( (item) => <ListItem key={item.id} 
-                                        item={item} 
-                                        active={item === activeItem} 
-                                        itemClickHandler={itemClickHandler} />)}
-      </div>
+function List() {
+  const url = process.env.REACT_APP_URL_FOR_USERS + 'users.json';
+  const [items, isLoading, hasError] = UseJsonFetch(url);     
+
+  if (!items) {
+    return (       
+      <div className="app__title">
+        {isLoading && <Alert text={'Loading...'}/>}
+        {hasError && <Alert text={hasError} kind={'danger'}/>}      
+      </div>       
     );
   } else {
-    return null;
+    return (
+      <div className="List list-group">
+        {items.map( (item) => <ListItem key={item.id} item={item} />)}
+      </div>        
+    );
   }
+
 }
  
-List.propTypes = {
-  items: PropTypes.arrayOf(UserModel()).isRequired,
-  activeItem: UserModel(),
-  itemClickHandler: PropTypes.func.isRequired
-}
-
 export default List;
